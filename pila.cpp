@@ -38,9 +38,23 @@ Pila::Pila(const Pila& p) : ancla(nullptr)
   copiarTodo(p);
 }
 
+void Pila::eliminarTodo()
+{
+  Nodo* aux;
+
+  while(ancla != nullptr)
+  {
+    aux = ancla;
+
+    ancla = ancla->getSig();
+
+    delete aux;
+  }
+}
+
 Pila::~Pila()
 {
-  borrarTodo();
+  eliminarTodo();
 }
 
 bool Pila::estaVacio() const 
@@ -92,9 +106,36 @@ char Pila::peek()
 
 Pila& Pila::operator = (const Pila& p){
 
-  borrarTodo();
+  eliminarTodo();
 
   copiarTodo(p);
 
   return *this;
 }
+
+// Nodo
+
+Pila::Nodo::Nodo() : sig(nullptr) { }
+
+Pila::Nodo::Nodo(const char& e) : dato(e), sig(nullptr) { }
+
+char Pila::Nodo::getDato() const 
+{
+  return dato;
+}
+
+typename Pila::Nodo* Pila::Nodo::getSig() const
+{
+  return sig;
+}
+
+void Pila::Nodo::setDato(const char& e)
+{
+  dato = e;
+}
+
+void Pila::Nodo::setSig(Nodo* p)
+{
+  sig = p;
+}
+

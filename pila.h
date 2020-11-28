@@ -28,7 +28,7 @@ private:
 
   void copiarTodo(const Pila&);
 
-  void borrarTodo();
+  void eliminarTodo();
 public:
 
   Pila();
@@ -47,29 +47,6 @@ public:
   Pila& operator = (const Pila&);
 };
 
-//Nodo
-Pila::Nodo::Nodo() : sig(nullptr) { }
 
-Pila::Nodo::Nodo(const char& e) : dato(e), sig(nullptr) { }
-
-char Pila::Nodo::getDato() const 
-{
-  return dato;
-}
-
-typename Pila::Nodo* Pila::Nodo::getSig() const
-{
-  return sig;
-}
-
-void Pila::Nodo::setDato(const char& e)
-{
-  dato = e;
-}
-
-void Pila::Nodo::setSig(Nodo* p)
-{
-  sig = p;
-}
 
 #endif
