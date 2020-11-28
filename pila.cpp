@@ -4,55 +4,96 @@ using namespace std;
 
 void Pila::copiarTodo(const Pila& p)
 {
-  int i(0);
-  while(i <= p.tope)
-  {
-    this->cadena[i] = p.cadena[i];
-    i++;
-  }
+  Nodo* aux(p.ancla);
+  Nodo* ultimo(nullptr);
+  Nodo* nuevoNodo;
 
-  this->tope = p.tope;
+  while(aux != nullptr)
+  {
+
+    if((nuevoNodo = new Nodo(aux->getDato())) == nullptr)
+    {
+      throw Exception("Memoria no disponible, copiarTodo"); 
+    }
+
+    if (ultimo == nullptr)
+    {
+      ancla = nuevoNodo;
+    }
+    else
+    {
+      ultimo->setSig(nuevoNodo);
+    }
+    
+    ultimo = nuevoNodo;
+    
+    aux = aux->getSig();
+  }
 }
 
-Pila::Pila() : tope(-1) { }
+Pila::Pila() : ancla(nullptr) { }
 
-Pila::Pila(const Pila& p) {copiarTodo(p);}
+Pila::Pila(const Pila& p) : ancla(nullptr) 
+{
+  copiarTodo(p);
+}
 
-bool Pila::estaVacio() {return tope == -1;}
+Pila::~Pila()
+{
+  borrarTodo();
+}
 
-bool Pila::estaLleno() {return 49;}
+bool Pila::estaVacio() const 
+{
+  return ancla == nullptr;
+}
 
 void Pila::push(const char& c)
 {
-  if(estaLleno())
-  {
+  Nodo* aux(new Nodo(c));
 
+  if(aux == nullptr)
+  {
+    // thorw
   }
 
-  cadena[++tope] = c;
+  aux->setSig(ancla);
+
+  ancla = aux;
 }
 
 char Pila::pop()
 {
-  if(estaVacio())
+  if(ancla == nullptr)
   {
-    throw Exception("Insuficiencia de datos, pop");    
+    // thorw
   }
 
-  return cadena[tope--];
+  char result(ancla->getDato());
+
+  Nodo* aux(ancla);
+
+  ancla = ancla->getSig();
+
+  delete aux;
+
+  return result;
 }
 
 char Pila::peek()
 {
-  if(estaVacio())
+  if(ancla == nullptr)
   {
-     
+    // thorw
   }
 
-  return cadena[tope];
+  return ancla->getDato();
 }
 
 Pila& Pila::operator = (const Pila& p){
+
+  borrarTodo();
+
   copiarTodo(p);
 
   return *this;
