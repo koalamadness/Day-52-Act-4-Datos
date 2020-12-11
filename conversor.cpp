@@ -50,11 +50,18 @@ int Conversor::nivelPrecedencia(const char &c)
 
 string Conversor::desapilarOperadores(const char &e)
 {
+
+  string resultado;
+
+  if(pilaConv.estaVacio())
+  {
+    pilaConv.push(e);
+    return resultado;
+  }
+
   int precOperadorAct = nivelPrecedencia(e);
   char elementoTope = pilaConv.peek();
   int precOperadorTope = nivelPrecedencia(elementoTope);
-
-  string resultado;
   
   while(!pilaConv.estaVacio())
   {

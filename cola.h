@@ -8,18 +8,42 @@
 class Cola
 {
 private:
-  char cadena[50];
-  int frentePos;
-  int finPos;
+  class Nodo 
+  {
+  private:
+    char* datoPtr;
+    Nodo* prev;
+    Nodo* sig;
+  public:
+    Nodo();
+    Nodo(const char&);
+
+    ~Nodo();
+
+    char* getDatoPtr() const;
+    char getDato() const;
+    Nodo* getPrev() const;
+    Nodo* getSig() const;
+
+    void setDatoPtr(char*);
+    void setDato(const char&);
+    void setPrev(Nodo*);
+    void setSig(Nodo*);
+  };
+
+  Nodo* header;
 
   void copiarTodo(const Cola&);
+
+  void eliminarTodo();
 
 public:
   Cola();
   Cola(const Cola&);
 
+  ~Cola();
+
   bool estaVacio();
-  bool estaLleno();
 
   void enqueue(const char&);
 

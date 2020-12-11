@@ -2,45 +2,160 @@
 
 using namespace std;
 
-void Cola::copiarTodo(const Cola& co) // FALTA
-{
-  int i(0);
-  while(i <= co.finPos)
-  {
-    this-> cadena[i] = co.cadena[i];
-    i++;
-  }
+//Nodo
 
-  this->finPos = co.finPos;
-  this->frentePos = co.frentePos;
+Cola::Nodo::Nodo() : datoPtr(nullptr), prev(nullptr), sig(nullptr) { }
+
+Cola::Nodo::Nodo(const char& e) : datoPtr(new char(e)), prev(nullptr), sig(nullptr) 
+{ 
+  if(datoPtr == nullptr)
+  {
+    throw Exception("Memoria insuficiente, creando nodo");
+  }
 }
 
-Cola::Cola() : frentePos(0), finPos(49) { }
-Cola::Cola(const Cola& co) {copiarTodo(co);} 
+Cola::Nodo::~Nodo()
+{
+  delete datoPtr;
+}
+
+char* Cola::Nodo::getDatoPtr() const 
+{
+  return datoPtr;
+}
+
+char Cola::Nodo::getDato() const
+{
+  if(datoPtr == nullptr)
+  {
+    throw Exception("Dato inexistente, getDato");
+  }
+  return *datoPtr;
+}
+
+typename Cola::Nodo* Cola::Nodo::getPrev() const
+{
+  return prev;
+}
+
+typename Cola::Nodo* Cola::Nodo::getSig() const
+{
+  return sig;
+}
+
+void Cola::Nodo::setDatoPtr(char *p)
+{
+  datoPtr = p;
+}
+
+void Cola::Nodo::setDato(const char &e)
+{
+  if(datoPtr == nullptr)
+  {
+    if((datoPtr = new char(e)) == nullptr)
+    {
+      throw Exception("Memoria no disponible, setDato");
+    }
+  }
+  else 
+  {
+    *datoPtr = e;
+  }
+}
+
+void Cola::Nodo::setSig(Nodo *p)
+{
+  sig = p;
+}
+
+void Cola::Nodo::setPrev(Nodo *p)
+{
+  prev = p;
+}
+
+// Cola
+
+void Cola::copiarTodo(const Cola& co) 
+{
+  Nodo* aux(co.header->getSig());
+  Nodo* newNode;
+
+  while(aux != co.header)
+  {
+    if((newNode = new Nodo(aux->getDato())) == nullptr)
+    {
+        throw Exception("Memoria no disponible, copiarTodo");     
+    }
+    newNode->setPrev(header->getPrev());
+    newNode->setSig(header);
+
+    header->getPrev()->setSig(newNode);   
+    header->setPrev(newNode);
+
+    aux = aux->getSig(); 
+  }
+
+}
+
+void Cola::eliminarTodo()
+{
+  Nodo* aux;
+
+  while(header->getSig() != header)
+  {
+    aux = header->getSig();
+
+    header->setSig(aux->getSig());
+
+    delete aux;
+  }
+
+  header->setSig(header);
+}
+
+Cola::Cola() : header(new Nodo) 
+{ 
+  if(header == nullptr)
+  {
+      throw Exception("Memoria no disponible, iniciando Cola");
+  }
+
+  header->setPrev(header);
+  header->setSig(header);
+}
+
+Cola::Cola(const Cola& co) : Cola()
+{
+  copiarTodo(co);
+} 
+
+Cola::~Cola()
+{
+  eliminarTodo();
+
+  delete header;
+}
 
 bool Cola::estaVacio()
 {
-  return frentePos == finPos + 1 or (frentePos == 0 and finPos == 49);
+  return header->getSig() == header;
 }
 
-bool Cola::estaLleno()
-{
-  return frentePos == finPos + 2 or (frentePos == 0 and finPos == 48)
-         or (frentePos == 1 and finPos == 49);
-}
 
 void Cola::enqueue(const char& c)
 {
-  if(estaLleno())
+  Nodo* aux;
+
+  if((aux = new Nodo(c)) == nullptr)
   {
-    throw Exception("Desbordamiento de datos, enqueue");
+      throw Exception("Memoria no disponible, enqueue");     
   }
 
-  if(++finPos == 50){
-    finPos = 0;
-  }
+  aux->setPrev(header->getPrev());
+  aux->setSig(header);
 
-  cadena[finPos] = c;
+  header->getPrev()->setSig(aux);
+  header->setPrev(aux);
 }
 
 char Cola::dequeue()
@@ -50,13 +165,16 @@ char Cola::dequeue()
     throw Exception("Insuficiencia de datos, dequeue");    
   }
 
-  char elemento(cadena[frentePos]);
+  char result(header->getSig()->getDato());
 
-  if(++frentePos == 50){
-    frentePos = 0;
-  }
+  Nodo* aux(header->getSig());
 
-  return elemento;
+  aux->getPrev()->setSig(aux->getSig());
+  aux->getSig()->setPrev(aux->getPrev());
+
+  delete aux;
+
+  return result;
 }
 
 char Cola::getFrente()
@@ -66,11 +184,13 @@ char Cola::getFrente()
     throw Exception("Insuficiencia de datos, dequeue");    
   }
 
-  return cadena[frentePos];
+  return header->getSig()->getDato();
 }
 
 Cola& Cola::operator = (const Cola &co)
 {
+  eliminarTodo();
+
   copiarTodo(co);
 
   return *this;

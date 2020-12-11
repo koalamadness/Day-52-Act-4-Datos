@@ -47,6 +47,4 @@ public:
   Pila& operator = (const Pila&);
 };
 
-
-
 #endif

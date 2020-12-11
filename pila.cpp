@@ -68,10 +68,11 @@ void Pila::push(const char& c)
 
   if(aux == nullptr)
   {
-    // thorw
+    throw Exception("Memoria no disponible, push"); 
   }
 
   aux->setSig(ancla);
+
 
   ancla = aux;
 }
@@ -80,7 +81,7 @@ char Pila::pop()
 {
   if(ancla == nullptr)
   {
-    // thorw
+    throw Exception("Insuficiencia de datos, pop"); 
   }
 
   char result(ancla->getDato());
@@ -98,7 +99,7 @@ char Pila::peek()
 {
   if(ancla == nullptr)
   {
-    // thorw
+    throw Exception("Insuficiencia de datos, peek"); 
   }
 
   return ancla->getDato();
